@@ -38,11 +38,25 @@ namespace ConnectFourAM
             p1.id = 1;
             Console.WriteLine("Player 1 Please enter your player name");
             p1.name = Console.ReadLine();
-
+            
             Player p2 = new Player();
             p2.id = 2;
-            Console.WriteLine("Player 2 Please enter your player name");
-            p2.name = Console.ReadLine();
+
+            Console.WriteLine("Do you want to play against another human?:       1");
+            Console.WriteLine("OR");
+            Console.WriteLine("Do you want to play against a computer?:          2");
+            int playerChoice = int.Parse(Console.ReadLine());
+            if (playerChoice == 1)
+            {
+                Console.WriteLine("Player 2 Please enter your player name");
+                p2.name = Console.ReadLine();
+            }
+            else
+            {
+                p2.name = "HAL 9000";
+            }
+
+                
 
             displayBoard();
 
@@ -51,19 +65,24 @@ namespace ConnectFourAM
                 Console.WriteLine("To make a move enter:          1");
                 Console.WriteLine("To undo the last move enter:   2");
                 Console.WriteLine("To redo the last move enter:   3");
-
-                int choice = int.Parse(Console.ReadLine());
-                if (choice == 1)
+                int gameChoice = int.Parse(Console.ReadLine());
+                if (gameChoice == 1)
                 {
                     makeMove(p1);
-                    makeMove(p2);
-
+                    if(playerChoice == 1)
+                    {
+                        makeMove(p2);
+                    }
+                    else
+                    {
+                        makeMove(p2);
+                    }
                 }
-                else if (choice == 2)
+                else if (gameChoice == 2)
                 {
                     undoMove();
                 }
-                else if (choice == 3)
+                else if (gameChoice == 3)
                 {
                     redoMove();
                 }
@@ -119,9 +138,18 @@ namespace ConnectFourAM
             void makeMove(Player player)
             {
                 Move thisMove = new Move();
-                Console.WriteLine("Player " + player.id + "'s move");
-                Console.WriteLine("Please enter the column of your move as a whole number(1 - 6)");
-                thisMove.xPosition = int.Parse(Console.ReadLine()) - 1;
+                if(player.name == "HAL 9000")
+                {
+                    Random map = new Random();
+                    int decision = map.Next(1, 7);
+                    thisMove.xPosition = decision - 1;
+                }
+                else
+                {
+                    Console.WriteLine("Player " + player.id + "'s move");
+                    Console.WriteLine("Please enter the column of your move as a whole number(1 - 6)");
+                    thisMove.xPosition = int.Parse(Console.ReadLine()) - 1;
+                }
 
                 for (int y = 0; y < boardHeight; y++)
                 {
