@@ -20,6 +20,7 @@ namespace ConnectFourAM
         public Player player;
     }
 
+
     class ConnectFour
     {
         static void Main(string[] args)
@@ -45,7 +46,6 @@ namespace ConnectFourAM
 
             displayBoard();
 
-
             do
             {
                 Console.WriteLine("To make a move enter:          1");
@@ -57,6 +57,7 @@ namespace ConnectFourAM
                 {
                     makeMove(p1);
                     makeMove(p2);
+
                 }
                 else if (choice == 2)
                 {
@@ -67,10 +68,27 @@ namespace ConnectFourAM
                     redoMove();
                 }
 
+
             } while (gameOver == false);
 
             Console.ReadLine();
 
+
+
+            void Win(Player player)
+            {
+                string message;
+                if (player == p1)
+                {
+                    message = string.Format("player " + player.name + " has won the game").Pastel("#a4f542");
+                }
+                else
+                {
+                    message = string.Format("player " + player.name + " has won the game").Pastel("#ff0000");
+                }
+                Console.WriteLine(message);
+                Console.ReadLine();
+            }
 
             void undoMove()
             {
@@ -108,8 +126,8 @@ namespace ConnectFourAM
                 thisMove.player = player;
                 allMoves.Push(thisMove);
                 updateBoard(allMoves);
+                checkWin();
             }
-
 
             void updateBoard(Stack<Move> allMovesStack)
             {
@@ -148,6 +166,7 @@ namespace ConnectFourAM
             }
 
 
+
             void displayBoard()
             {
                 int rowLength = board.GetLength(0);
@@ -164,6 +183,329 @@ namespace ConnectFourAM
                 Console.WriteLine("  ---------------------------");
                 Console.WriteLine("  1    2    3    4    5    6");
             }
+
+
+
+
+
+
+
+
+
+
+
+            void checkWin()
+            {
+                bool one = false,
+                    two = false,
+                    three = false,
+                    four = false;
+
+                for (var y = 0; y < boardHeight; y++)
+                {
+                    for (var x = 0; x < boardWidth; x++)
+                    {
+
+                        //Horizontal Check
+                        if (x + 3 < boardWidth && board[y, x + 1] == 1 && board[y, x + 2] == 1 && board[y, x + 3] == 1)
+                        {
+                            foreach (Move move in allMoves)
+                            {
+                                if (move.player.id == 1)
+                                {
+                                    if (move.xPosition == x && move.yPosition == y)
+                                    {
+                                        one = true;
+                                    }
+                                    else if (move.xPosition == x + 1 && move.yPosition == y)
+                                    {
+                                        two = true;
+                                    }
+                                    else if (move.xPosition == x + 2 && move.yPosition == y)
+                                    {
+                                        three = true;
+                                    }
+                                    else if (move.xPosition == x + 3 && move.yPosition == y)
+                                    {
+                                        four = true;
+                                    }
+
+                                    if (one && two && three && four)
+                                    {
+                                        gameOver = true;
+                                        Win(p1);
+                                        break;
+                                    }
+                                }
+                            }
+                            one = false;
+                            two = false;
+                            three = false;
+                            four = false;
+
+                            foreach (Move move in allMoves)
+                            {
+                                if (move.player.id == 2)
+                                {
+                                    if (move.xPosition == x && move.yPosition == y)
+                                    {
+                                        one = true;
+                                    }
+                                    else if (move.xPosition == x + 1 && move.yPosition == y)
+                                    {
+                                        two = true;
+                                    }
+                                    else if (move.xPosition == x + 2 && move.yPosition == y)
+                                    {
+                                        three = true;
+                                    }
+                                    else if (move.xPosition == x + 3 && move.yPosition == y)
+                                    {
+                                        four = true;
+                                    }
+
+                                    if (one && two && three && four)
+                                    {
+                                        gameOver = true;
+                                        Win(p2);
+                                        break;
+                                    }
+                                }
+                            }
+                            one = false;
+                            two = false;
+                            three = false;
+                            four = false;
+                        }
+
+                        //Vertical Check
+                        if (y + 3 < boardHeight && board[y + 1, x] == 1 && board[y + 2, x] == 1 && board[y + 3, x] == 1)
+                        {
+                            foreach (Move move in allMoves)
+                            {
+                                if (move.player.id == 1)
+                                {
+                                    if (move.xPosition == x && move.yPosition == y)
+                                    {
+                                        one = true;
+                                    }
+                                    else if (move.xPosition == x && move.yPosition == y + 1)
+                                    {
+                                        two = true;
+                                    }
+                                    else if (move.xPosition == x && move.yPosition == y + 2)
+                                    {
+                                        three = true;
+                                    }
+                                    else if (move.xPosition == x && move.yPosition == y + 3)
+                                    {
+                                        four = true;
+                                    }
+
+                                    if (one && two && three && four)
+                                    {
+                                        gameOver = true;
+                                        Win(p1);
+                                        break;
+                                    }
+                                }
+                            }
+                            one = false;
+                            two = false;
+                            three = false;
+                            four = false;
+                            foreach (Move move in allMoves)
+                            {
+                                if (move.player.id == 2)
+                                {
+                                    if (move.xPosition == x && move.yPosition == y)
+                                    {
+                                        one = true;
+                                    }
+                                    else if (move.xPosition == x && move.yPosition == y + 1)
+                                    {
+                                        two = true;
+                                    }
+                                    else if (move.xPosition == x && move.yPosition == y + 2)
+                                    {
+                                        three = true;
+                                    }
+                                    else if (move.xPosition == x && move.yPosition == y + 3)
+                                    {
+                                        four = true;
+                                    }
+
+                                    if (one && two && three && four)
+                                    {
+                                        gameOver = true;
+                                        Win(p2);
+                                        break;
+                                    }
+                                }
+                            }
+                            one = false;
+                            two = false;
+                            three = false;
+                            four = false;
+
+                        }
+
+
+                        //Diagonal up Check
+                        if (y + 3 < boardHeight)
+                        {
+                            if (x + 3 < boardWidth && board[y + 1, x + 1] == 1 && board[y + 2, x + 2] == 1 && board[y + 3, x + 3] == 1)
+                            {
+                                foreach (Move move in allMoves)
+                                {
+                                    if (move.player.id == 1)
+                                    {
+                                        if (move.xPosition == x && move.yPosition == y)
+                                        {
+                                            one = true;
+                                        }
+                                        else if (move.xPosition == x + 1 && move.yPosition == y + 1)
+                                        {
+                                            two = true;
+                                        }
+                                        else if (move.xPosition == x + 2 && move.yPosition == y + 2)
+                                        {
+                                            three = true;
+                                        }
+                                        else if (move.xPosition == x + 3 && move.yPosition == y + 3)
+                                        {
+                                            four = true;
+                                        }
+
+                                        if (one && two && three && four)
+                                        {
+                                            gameOver = true;
+                                            Win(p1);
+                                            break;
+                                        }
+                                    }
+                                }
+                                one = false;
+                                two = false;
+                                three = false;
+                                four = false;
+
+                                foreach (Move move in allMoves)
+                                {
+                                    if (move.player.id == 2)
+                                    {
+                                        if (move.xPosition == x && move.yPosition == y)
+                                        {
+                                            one = true;
+                                        }
+                                        else if (move.xPosition == x + 1 && move.yPosition == y + 1)
+                                        {
+                                            two = true;
+                                        }
+                                        else if (move.xPosition == x + 2 && move.yPosition == y + 2)
+                                        {
+                                            three = true;
+                                        }
+                                        else if (move.xPosition == x + 3 && move.yPosition == y + 3)
+                                        {
+                                            four = true;
+                                        }
+
+                                        if (one && two && three && four)
+                                        {
+                                            gameOver = true;
+                                            Win(p2);
+                                            break;
+                                        }
+                                    }
+                                }
+                                one = false;
+                                two = false;
+                                three = false;
+                                four = false;
+
+
+                            }
+                        }
+
+                        //Diagonal down Check
+                        if (y - 3 >= 0)
+                        {
+                            if (x + 3 < boardWidth && board[y - 1, x + 1] == 1 && board[y - 2, x + 2] == 1 && board[y - 3, x + 3] == 1)
+                            {
+                                foreach (Move move in allMoves)
+                                {
+                                    if (move.player.id == 1)
+                                    {
+                                        if (move.xPosition == x && move.yPosition == y)
+                                        {
+                                            one = true;
+                                        }
+                                        else if (move.xPosition == x + 1 && move.yPosition == y - 1)
+                                        {
+                                            two = true;
+                                        }
+                                        else if (move.xPosition == x + 2 && move.yPosition == y - 2)
+                                        {
+                                            three = true;
+                                        }
+                                        else if (move.xPosition == x + 3 && move.yPosition == y - 3)
+                                        {
+                                            four = true;
+                                        }
+
+                                        if (one && two && three && four)
+                                        {
+                                            gameOver = true;
+                                            Win(p1);
+                                            break;
+                                        }
+                                    }
+                                }
+                                one = false;
+                                two = false;
+                                three = false;
+                                four = false;
+
+                                foreach (Move move in allMoves)
+                                {
+                                    if (move.player.id == 2)
+                                    {
+                                        if (move.xPosition == x && move.yPosition == y)
+                                        {
+                                            one = true;
+                                        }
+                                        else if (move.xPosition == x + 1 && move.yPosition == y - 1)
+                                        {
+                                            two = true;
+                                        }
+                                        else if (move.xPosition == x + 2 && move.yPosition == y - 2)
+                                        {
+                                            three = true;
+                                        }
+                                        else if (move.xPosition == x + 3 && move.yPosition == y - 3)
+                                        {
+                                            four = true;
+                                        }
+
+                                        if (one && two && three && four)
+                                        {
+                                            gameOver = true;
+                                            Win(p2);
+                                            break;
+                                        }
+                                    }
+                                }
+                                one = false;
+                                two = false;
+                                three = false;
+                                four = false;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
+
