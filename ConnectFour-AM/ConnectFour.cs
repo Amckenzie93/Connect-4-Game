@@ -95,6 +95,11 @@ namespace ConnectFourAM
                 undoneMoves.Push(allMoves.Peek());
                 Move lastmove = allMoves.Pop();
                 board[lastmove.yPosition, lastmove.xPosition] = 0;
+
+                undoneMoves.Push(allMoves.Peek());
+                Move lastmove2 = allMoves.Pop();
+                board[lastmove2.yPosition, lastmove2.xPosition] = 0;
+
                 updateBoard(allMoves);
             }
 
@@ -103,6 +108,11 @@ namespace ConnectFourAM
                 Move move = undoneMoves.Pop();
                 board[move.yPosition, move.xPosition] = 1;
                 allMoves.Push(move);
+
+                Move move2 = undoneMoves.Pop();
+                board[move2.yPosition, move2.xPosition] = 1;
+                allMoves.Push(move2);
+
                 updateBoard(allMoves);
             }
 
