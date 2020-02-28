@@ -25,6 +25,7 @@ namespace ConnectFourAM
         static void Main(string[] args)
         {
             Stack<Move> allMoves = new Stack<Move>();
+            Stack<Move> undoneMoves = new Stack<Move>();
             int boardHeight = 6;
             int boardWidth = 6;
             int[,] board = new int[boardHeight, boardWidth];
@@ -48,13 +49,22 @@ namespace ConnectFourAM
             do
             {
                 Console.WriteLine("To make a move enter:          1");
+                Console.WriteLine("To undo the last move enter:   2");
+                Console.WriteLine("To redo the last move enter:   3");
 
                 int choice = int.Parse(Console.ReadLine());
                 if (choice == 1)
                 {
                     makeMove(p1);
                     makeMove(p2);
-
+                }
+                else if (choice == 2)
+                {
+                    undoMove();
+                }
+                else if (choice == 3)
+                {
+                    redoMove();
                 }
 
             } while (gameOver == false);
@@ -62,9 +72,21 @@ namespace ConnectFourAM
             Console.ReadLine();
 
 
+            void undoMove()
+            {
+                undoneMoves.Push(allMoves.Peek());
+                Move lastmove = allMoves.Pop();
+                board[lastmove.yPosition, lastmove.xPosition] = 0;
+                updateBoard(allMoves);
+            }
 
-            Console.ReadLine();
-
+            void redoMove()
+            {
+                Move move = undoneMoves.Pop();
+                board[move.yPosition, move.xPosition] = 1;
+                allMoves.Push(move);
+                updateBoard(allMoves);
+            }
 
             void makeMove(Player player)
             {
