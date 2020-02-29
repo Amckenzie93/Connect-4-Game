@@ -20,56 +20,53 @@ namespace ConnectFourAM
         public Player player;
     }
 
+    class GameData
+    {
+        public List<Queue<Move>> AllGames = new List<Queue<Move>>();
+        public Stack<Move> allMoves = new Stack<Move>();
+        public Stack<Move> undoneMoves = new Stack<Move>();
+    }
+
 
     class ConnectFour
     {
         static void Main(string[] args)
         {
-            Stack<Move> allMoves = new Stack<Move>();
-            Stack<Move> undoneMoves = new Stack<Move>();
+            GameData GameData = new GameData();
             int boardHeight = 6;
-            int boardWidth = 6;
+            int boardWidth = 7;
             int[,] board = new int[boardHeight, boardWidth];
             bool gameOver = false;
 
             Console.WriteLine("Welcome to Connect 4 \n");
 
+            displayBoard();
+            Console.WriteLine("\n");
+
+            
             Player p1 = new Player();
             p1.id = 1;
             Console.WriteLine("Player 1 Please enter your player name");
             p1.name = Console.ReadLine();
-            
+
             Player p2 = new Player();
             p2.id = 2;
 
-            Console.WriteLine("Do you want to play against another human?:       1");
-            Console.WriteLine("OR");
-            Console.WriteLine("Do you want to play against a computer?:          2");
-            int playerChoice = int.Parse(Console.ReadLine());
-            if (playerChoice == 1)
-            {
-                Console.WriteLine("Player 2 Please enter your player name");
-                p2.name = Console.ReadLine();
-            }
-            else
-            {
-                p2.name = "HAL 9000";
-            }
+            int playerChoice = 0;
 
-                
-
-            displayBoard();
+            menu();
 
             do
             {
                 Console.WriteLine("To make a move enter:          1");
                 Console.WriteLine("To undo the last move enter:   2");
                 Console.WriteLine("To redo the last move enter:   3");
+                Console.WriteLine("\n");
                 int gameChoice = int.Parse(Console.ReadLine());
                 if (gameChoice == 1)
                 {
                     makeMove(p1);
-                    if(playerChoice == 1)
+                    if (playerChoice == 1)
                     {
                         makeMove(p2);
                     }
@@ -86,13 +83,91 @@ namespace ConnectFourAM
                 {
                     redoMove();
                 }
-
-
             } while (gameOver == false);
+
+
 
             Console.ReadLine();
 
 
+
+
+
+
+            void menu()
+            {
+                Console.WriteLine("\n");
+                Console.WriteLine("Do you want to play against another human?:       1");
+                Console.WriteLine("OR");
+                Console.WriteLine("Do you want to play against a computer?:          2");
+
+                if (GameData.AllGames.Count > 0)
+                {
+                    Console.WriteLine("OR");
+                    Console.WriteLine("Do you want to Re-watch a previous game?:     3");
+                }
+                Console.WriteLine("\n");
+                playerChoice = int.Parse(Console.ReadLine());
+                if (playerChoice == 1)
+                {
+                    gameOver = false;
+                    initBoard();
+                    Console.WriteLine("Player 2 Please enter your player name");
+                    p2.name = Console.ReadLine();
+                }
+                else if (playerChoice == 2)
+                {
+                    gameOver = false;
+                    initBoard();
+                    p2.name = "HAL 9000";
+                }
+                else if (playerChoice == 3)
+                {
+                    Console.WriteLine("Please pick the game you wish to replay from the list below:");
+                    
+                    for(var i = 0; i < GameData.AllGames.Count(); i++)
+                    {
+
+                        Console.WriteLine("Game: " + i+1);
+                    }
+
+                    int gameNumber = int.Parse(Console.ReadLine()) -1;
+                    initBoard();
+                    reWatch(gameNumber);
+                }
+            }
+
+            void initBoard()
+            {
+                for (var y = 0; y < boardHeight; y++)
+                {
+                    for (var x = 0; x < boardWidth; x++)
+                    {
+                        board[y, x] = 0;
+                    }
+                }
+            }
+
+
+            void reWatch(int game)
+            {
+                foreach(Move move in GameData.AllGames[game])
+                {
+                    if (move.player.id == 1)
+                    {
+                        board[move.yPosition, move.xPosition] = 1;
+                    }
+                    else
+                    {
+                        board[move.yPosition, move.xPosition] = 1;
+                    }
+                } 
+                RewatchBoard(GameData.AllGames[game]);
+                initBoard();
+                GameData.allMoves.Clear();
+                GameData.undoneMoves.Clear();
+                menu();
+            }
 
             void Win(Player player)
             {
@@ -105,40 +180,48 @@ namespace ConnectFourAM
                 {
                     message = string.Format("player " + player.name + " has won the game").Pastel("#ff0000");
                 }
+
                 Console.WriteLine(message);
-                Console.ReadLine();
+
+                Queue<Move> clonedStack = new Queue<Move>();
+                clonedStack = new Queue<Move>(GameData.allMoves);
+                GameData.AllGames.Add(clonedStack);
+                GameData.allMoves.Clear();
+                GameData.undoneMoves.Clear();
+                menu();
             }
 
             void undoMove()
             {
-                undoneMoves.Push(allMoves.Peek());
-                Move lastmove = allMoves.Pop();
+                GameData.undoneMoves.Push(GameData.allMoves.Peek());
+                Move lastmove = GameData.allMoves.Pop();
                 board[lastmove.yPosition, lastmove.xPosition] = 0;
 
-                undoneMoves.Push(allMoves.Peek());
-                Move lastmove2 = allMoves.Pop();
+                GameData.undoneMoves.Push(GameData.allMoves.Peek());
+                Move lastmove2 = GameData.allMoves.Pop();
                 board[lastmove2.yPosition, lastmove2.xPosition] = 0;
 
-                updateBoard(allMoves);
+                updateBoard(GameData.allMoves);
             }
 
             void redoMove()
             {
-                Move move = undoneMoves.Pop();
+                Move move = GameData.undoneMoves.Pop();
                 board[move.yPosition, move.xPosition] = 1;
-                allMoves.Push(move);
+                GameData.allMoves.Push(move);
 
-                Move move2 = undoneMoves.Pop();
+                Move move2 = GameData.undoneMoves.Pop();
                 board[move2.yPosition, move2.xPosition] = 1;
-                allMoves.Push(move2);
+                GameData.allMoves.Push(move2);
 
-                updateBoard(allMoves);
+                updateBoard(GameData.allMoves);
             }
 
             void makeMove(Player player)
             {
                 Move thisMove = new Move();
-                if(player.name == "HAL 9000")
+                thisMove.player = player;
+                if (player.name == "HAL 9000")
                 {
                     Random map = new Random();
                     int decision = map.Next(1, 7);
@@ -147,7 +230,7 @@ namespace ConnectFourAM
                 else
                 {
                     Console.WriteLine("Player " + player.id + "'s move");
-                    Console.WriteLine("Please enter the column of your move as a whole number(1 - 6)");
+                    Console.WriteLine("Please enter the column of your move as a whole number(1 - 7)");
                     thisMove.xPosition = int.Parse(Console.ReadLine()) - 1;
                 }
 
@@ -162,8 +245,8 @@ namespace ConnectFourAM
                 }
 
                 thisMove.player = player;
-                allMoves.Push(thisMove);
-                updateBoard(allMoves);
+                GameData.allMoves.Push(thisMove);
+                updateBoard(GameData.allMoves);
                 checkWin();
             }
 
@@ -199,8 +282,50 @@ namespace ConnectFourAM
                     }
                     Console.Write(Environment.NewLine);
                 }
-                Console.WriteLine("  ---------------------------");
-                Console.WriteLine("  1    2    3    4    5    6");
+                Console.WriteLine("  --------------------------------");
+                Console.WriteLine("  1    2    3    4    5    6    7");
+            }
+
+
+            void RewatchBoard(Queue<Move> allMovesQueue)
+            {
+                //var moves = GameData.allMovesQueue.Reverse();
+
+                for (int y = 5; y >= 0; y--)
+                {
+                    for (int x = 0; x < boardWidth; x++)
+                    {
+                        if (board[y, x] == 0)
+                        {
+                            Console.Write(string.Format("  {0}  ", board[y, x]));
+                        }
+                        else
+                        {
+                            foreach (var move in allMovesQueue)
+                            {
+                                if (move.xPosition == x && move.yPosition == y)
+                                {
+                                    if (move.player.id == 1)
+                                    {
+                                        System.Threading.Thread.Sleep(500);
+                                        Console.Write(string.Format("  {0}  ", board[y, x]).Pastel("#a4f542"));
+                                    }
+                                    else
+                                    {
+                                        System.Threading.Thread.Sleep(500);
+                                        Console.Write(string.Format("  {0}  ", board[y, x]).Pastel("#ff0000"));
+                                    }
+
+                                }
+                                
+                            }
+
+                        }
+                    }
+                    Console.Write(Environment.NewLine);
+                }
+                Console.WriteLine("  --------------------------------");
+                Console.WriteLine("  1    2    3    4    5    6    7");
             }
 
 
@@ -218,15 +343,9 @@ namespace ConnectFourAM
                     }
                     Console.Write(Environment.NewLine);
                 }
-                Console.WriteLine("  ---------------------------");
-                Console.WriteLine("  1    2    3    4    5    6");
+                Console.WriteLine("  --------------------------------");
+                Console.WriteLine("  1    2    3    4    5    6    7");
             }
-
-
-
-
-
-
 
 
 
@@ -247,7 +366,7 @@ namespace ConnectFourAM
                         //Horizontal Check
                         if (x + 3 < boardWidth && board[y, x + 1] == 1 && board[y, x + 2] == 1 && board[y, x + 3] == 1)
                         {
-                            foreach (Move move in allMoves)
+                            foreach (Move move in GameData.allMoves)
                             {
                                 if (move.player.id == 1)
                                 {
@@ -270,7 +389,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        gameOver = true;
+                                        
                                         Win(p1);
                                         break;
                                     }
@@ -281,7 +400,7 @@ namespace ConnectFourAM
                             three = false;
                             four = false;
 
-                            foreach (Move move in allMoves)
+                            foreach (Move move in GameData.allMoves)
                             {
                                 if (move.player.id == 2)
                                 {
@@ -304,7 +423,6 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        gameOver = true;
                                         Win(p2);
                                         break;
                                     }
@@ -319,7 +437,7 @@ namespace ConnectFourAM
                         //Vertical Check
                         if (y + 3 < boardHeight && board[y + 1, x] == 1 && board[y + 2, x] == 1 && board[y + 3, x] == 1)
                         {
-                            foreach (Move move in allMoves)
+                            foreach (Move move in GameData.allMoves)
                             {
                                 if (move.player.id == 1)
                                 {
@@ -342,7 +460,6 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        gameOver = true;
                                         Win(p1);
                                         break;
                                     }
@@ -352,7 +469,7 @@ namespace ConnectFourAM
                             two = false;
                             three = false;
                             four = false;
-                            foreach (Move move in allMoves)
+                            foreach (Move move in GameData.allMoves)
                             {
                                 if (move.player.id == 2)
                                 {
@@ -375,7 +492,6 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        gameOver = true;
                                         Win(p2);
                                         break;
                                     }
@@ -394,7 +510,7 @@ namespace ConnectFourAM
                         {
                             if (x + 3 < boardWidth && board[y + 1, x + 1] == 1 && board[y + 2, x + 2] == 1 && board[y + 3, x + 3] == 1)
                             {
-                                foreach (Move move in allMoves)
+                                foreach (Move move in GameData.allMoves)
                                 {
                                     if (move.player.id == 1)
                                     {
@@ -417,7 +533,6 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            gameOver = true;
                                             Win(p1);
                                             break;
                                         }
@@ -428,7 +543,7 @@ namespace ConnectFourAM
                                 three = false;
                                 four = false;
 
-                                foreach (Move move in allMoves)
+                                foreach (Move move in GameData.allMoves)
                                 {
                                     if (move.player.id == 2)
                                     {
@@ -451,7 +566,6 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            gameOver = true;
                                             Win(p2);
                                             break;
                                         }
@@ -471,7 +585,7 @@ namespace ConnectFourAM
                         {
                             if (x + 3 < boardWidth && board[y - 1, x + 1] == 1 && board[y - 2, x + 2] == 1 && board[y - 3, x + 3] == 1)
                             {
-                                foreach (Move move in allMoves)
+                                foreach (Move move in GameData.allMoves)
                                 {
                                     if (move.player.id == 1)
                                     {
@@ -494,7 +608,6 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            gameOver = true;
                                             Win(p1);
                                             break;
                                         }
@@ -505,7 +618,7 @@ namespace ConnectFourAM
                                 three = false;
                                 four = false;
 
-                                foreach (Move move in allMoves)
+                                foreach (Move move in GameData.allMoves)
                                 {
                                     if (move.player.id == 2)
                                     {
@@ -528,7 +641,6 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            gameOver = true;
                                             Win(p2);
                                             break;
                                         }
@@ -546,4 +658,5 @@ namespace ConnectFourAM
         }
     }
 }
+
 
