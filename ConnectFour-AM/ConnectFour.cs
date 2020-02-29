@@ -43,7 +43,7 @@ namespace ConnectFourAM
             displayBoard();
             Console.WriteLine("\n");
 
-            
+
             Player p1 = new Player();
             p1.id = 1;
             Console.WriteLine("Player 1 Please enter your player name");
@@ -124,14 +124,14 @@ namespace ConnectFourAM
                 else if (playerChoice == 3)
                 {
                     Console.WriteLine("Please pick the game you wish to replay from the list below:");
-                    
-                    for(var i = 0; i < GameData.AllGames.Count(); i++)
+
+                    for (var i = 0; i < GameData.AllGames.Count(); i++)
                     {
 
-                        Console.WriteLine("Game: " + i+1);
+                        Console.WriteLine("Game: " + (i + 1));
                     }
 
-                    int gameNumber = int.Parse(Console.ReadLine()) -1;
+                    int gameNumber = int.Parse(Console.ReadLine()) - 1;
                     initBoard();
                     reWatch(gameNumber);
                 }
@@ -151,7 +151,7 @@ namespace ConnectFourAM
 
             void reWatch(int game)
             {
-                foreach(Move move in GameData.AllGames[game])
+                foreach (Move move in GameData.AllGames[game])
                 {
                     if (move.player.id == 1)
                     {
@@ -161,7 +161,7 @@ namespace ConnectFourAM
                     {
                         board[move.yPosition, move.xPosition] = 1;
                     }
-                } 
+                }
                 RewatchBoard(GameData.AllGames[game]);
                 initBoard();
                 GameData.allMoves.Clear();
@@ -289,43 +289,25 @@ namespace ConnectFourAM
 
             void RewatchBoard(Queue<Move> allMovesQueue)
             {
-                //var moves = GameData.allMovesQueue.Reverse();
-
-                for (int y = 5; y >= 0; y--)
+                for (int y = 0; y < boardHeight; y++)
                 {
                     for (int x = 0; x < boardWidth; x++)
                     {
-                        if (board[y, x] == 0)
-                        {
-                            Console.Write(string.Format("  {0}  ", board[y, x]));
-                        }
-                        else
-                        {
-                            foreach (var move in allMovesQueue)
-                            {
-                                if (move.xPosition == x && move.yPosition == y)
-                                {
-                                    if (move.player.id == 1)
-                                    {
-                                        System.Threading.Thread.Sleep(500);
-                                        Console.Write(string.Format("  {0}  ", board[y, x]).Pastel("#a4f542"));
-                                    }
-                                    else
-                                    {
-                                        System.Threading.Thread.Sleep(500);
-                                        Console.Write(string.Format("  {0}  ", board[y, x]).Pastel("#ff0000"));
-                                    }
-
-                                }
-                                
-                            }
-
-                        }
+                        board[y, x] = 0;
                     }
-                    Console.Write(Environment.NewLine);
                 }
-                Console.WriteLine("  --------------------------------");
-                Console.WriteLine("  1    2    3    4    5    6    7");
+                Stack<Move> newStack = new Stack<Move>();
+                foreach (var item in allMovesQueue.Reverse())
+                {
+                    newStack.Push(item);
+                    board[item.yPosition, item.xPosition] = 1;
+                    updateBoard(newStack);
+                    System.Threading.Thread.Sleep(200);
+                }
+
+
+
+
             }
 
 
@@ -389,7 +371,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        
+
                                         Win(p1);
                                         break;
                                     }
