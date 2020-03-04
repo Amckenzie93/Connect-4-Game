@@ -37,13 +37,12 @@ namespace ConnectFourAM
             int boardWidth = 7;
             int[,] board = new int[boardHeight, boardWidth];
             bool gameOver = false;
+            int gameChoice;
+            int playerChoice;
+
 
             Console.WriteLine("Welcome to Connect 4 \n");
-
-            displayBoard();
             Console.WriteLine("\n");
-
-
             Player p1 = new Player();
             p1.id = 1;
             Console.WriteLine("Player 1 Please enter your player name");
@@ -52,47 +51,37 @@ namespace ConnectFourAM
             Player p2 = new Player();
             p2.id = 2;
 
-            int playerChoice = 0;
 
             menu();
-
-            do
-            {
-                Console.WriteLine("To make a move enter:          1");
-                Console.WriteLine("To undo the last move enter:   2");
-                Console.WriteLine("To redo the last move enter:   3");
-                Console.WriteLine("\n");
-                int gameChoice = int.Parse(Console.ReadLine());
-                if (gameChoice == 1)
-                {
-                    makeMove(p1);
-                    if (playerChoice == 1)
-                    {
-                        makeMove(p2);
-                    }
-                    else
-                    {
-                        makeMove(p2);
-                    }
-                }
-                else if (gameChoice == 2)
-                {
-                    undoMove();
-                }
-                else if (gameChoice == 3)
-                {
-                    redoMove();
-                }
-            } while (gameOver == false);
-
 
 
             Console.ReadLine();
 
 
-
-
-
+            void gameOptions()
+            {
+                do
+                {
+                    Console.WriteLine("To make a move enter:          1");
+                    Console.WriteLine("To undo the last move enter:   2");
+                    Console.WriteLine("To redo the last move enter:   3");
+                    Console.WriteLine("\n");
+                    gameChoice = int.Parse(Console.ReadLine());
+                    if (gameChoice == 1)
+                    {
+                        makeMove(p1);
+                        makeMove(p2);
+                    }
+                    else if (gameChoice == 2)
+                    {
+                        undoMove();
+                    }
+                    else if (gameChoice == 3)
+                    {
+                        redoMove();
+                    }
+                } while (gameOver == false);
+            }
 
             void menu()
             {
@@ -114,12 +103,14 @@ namespace ConnectFourAM
                     initBoard();
                     Console.WriteLine("Player 2 Please enter your player name");
                     p2.name = Console.ReadLine();
+                    gameOptions();
                 }
                 else if (playerChoice == 2)
                 {
                     gameOver = false;
                     initBoard();
                     p2.name = "HAL 9000";
+                    gameOptions();
                 }
                 else if (playerChoice == 3)
                 {
@@ -188,6 +179,8 @@ namespace ConnectFourAM
                 GameData.AllGames.Add(clonedStack);
                 GameData.allMoves.Clear();
                 GameData.undoneMoves.Clear();
+                gameChoice = 0;
+                playerChoice = 0;
                 menu();
             }
 
@@ -373,7 +366,7 @@ namespace ConnectFourAM
                                     {
 
                                         Win(p1);
-                                        break;
+                                        return;
                                     }
                                 }
                             }
@@ -406,7 +399,7 @@ namespace ConnectFourAM
                                     if (one && two && three && four)
                                     {
                                         Win(p2);
-                                        break;
+                                        return;
                                     }
                                 }
                             }
@@ -443,7 +436,7 @@ namespace ConnectFourAM
                                     if (one && two && three && four)
                                     {
                                         Win(p1);
-                                        break;
+                                        return;
                                     }
                                 }
                             }
@@ -475,7 +468,7 @@ namespace ConnectFourAM
                                     if (one && two && three && four)
                                     {
                                         Win(p2);
-                                        break;
+                                        return;
                                     }
                                 }
                             }
@@ -516,7 +509,7 @@ namespace ConnectFourAM
                                         if (one && two && three && four)
                                         {
                                             Win(p1);
-                                            break;
+                                            return;
                                         }
                                     }
                                 }
@@ -549,7 +542,7 @@ namespace ConnectFourAM
                                         if (one && two && three && four)
                                         {
                                             Win(p2);
-                                            break;
+                                            return;
                                         }
                                     }
                                 }
@@ -591,7 +584,7 @@ namespace ConnectFourAM
                                         if (one && two && three && four)
                                         {
                                             Win(p1);
-                                            break;
+                                            return;
                                         }
                                     }
                                 }
@@ -624,7 +617,7 @@ namespace ConnectFourAM
                                         if (one && two && three && four)
                                         {
                                             Win(p2);
-                                            break;
+                                            return;
                                         }
                                     }
                                 }
