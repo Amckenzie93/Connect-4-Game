@@ -29,11 +29,21 @@ namespace ConnectFourAM
     }
 
 
+    class GameMetrics
+    {
+        public List<long> UpdateDisplayTimesAvg = new List<long>();
+        public List<long> UndoMoveTimeAvg = new List<long>();
+        public List<long> RedoMoveTimeAvg = new List<long>();
+        public List<long> CheckWinTimeAvg = new List<long>();
+    }
+
+
     class ConnectFour
     {
         static void Main(string[] args)
         {
             GameData GameData = new GameData();
+            GameMetrics GameTimeComplexity = new GameMetrics();
             int boardHeight = 6;
             int boardWidth = 7;
             int[,] board = new int[boardHeight, boardWidth];
@@ -56,12 +66,8 @@ namespace ConnectFourAM
             Player p2 = new Player();
             p2.id = 2;
 
-            
             menu();
-
-
             Console.ReadLine();
-
 
             void gameOptions()
             {
@@ -99,6 +105,8 @@ namespace ConnectFourAM
                 {
                     Console.WriteLine("      OR");
                     Console.WriteLine("3:    Do you want to Re-watch a previous game?");
+                    Console.WriteLine("      OR");
+                    Console.WriteLine("4:    View game time complexity averages per function?");
                 }
                 Console.WriteLine("\n");
                 playerChoice = int.Parse(Console.ReadLine());
@@ -131,6 +139,60 @@ namespace ConnectFourAM
                     initBoard();
                     reWatch(gameNumber);
                 }
+                else if(playerChoice == 4)
+                {
+                    displayGameTime();
+                }
+            }
+
+            void displayGameTime()
+            {
+                long UpdateDisplayAvg = 0;
+                long UndoMoveAvg = 0;
+                long RedoMoveAvg = 0;
+                long CheckWinAvg = 0;
+
+
+
+                foreach (var item in GameTimeComplexity.UpdateDisplayTimesAvg)
+                {
+                    UpdateDisplayAvg += item;
+                }
+                foreach (var item in GameTimeComplexity.UndoMoveTimeAvg)
+                {
+                    UndoMoveAvg += item;
+                }
+                foreach (var item in GameTimeComplexity.RedoMoveTimeAvg)
+                {
+                    RedoMoveAvg += item;
+                }
+                foreach (var item in GameTimeComplexity.CheckWinTimeAvg)
+                {
+                    CheckWinAvg += item;
+                }
+
+                Console.WriteLine("Average time taken to update and display the game board in CMD window with new player moves:");
+                Console.WriteLine(UpdateDisplayAvg / GameTimeComplexity.UpdateDisplayTimesAvg.Count() + " miliseconds average.");
+                Console.WriteLine("\n");
+
+                if (GameTimeComplexity.UndoMoveTimeAvg.Count() > 0)
+                {
+                    Console.WriteLine("Average time taken to undo a pair of moves in the game:");
+                    Console.WriteLine(UndoMoveAvg / GameTimeComplexity.UndoMoveTimeAvg.Count() + " miliseconds average.");
+                    Console.WriteLine("\n");
+                }
+                if (GameTimeComplexity.RedoMoveTimeAvg.Count() > 0)
+                {
+                    Console.WriteLine("Average time taken to redo a pair of moves in the game:");
+                    Console.WriteLine(RedoMoveAvg / GameTimeComplexity.RedoMoveTimeAvg.Count() + " miliseconds average.");
+                    Console.WriteLine("\n");
+                }
+
+                Console.WriteLine("Average time taken to check for win conditions in the game:");
+                Console.WriteLine(CheckWinAvg / GameTimeComplexity.CheckWinTimeAvg.Count() + " miliseconds average.");
+                Console.WriteLine("\n");
+
+                menu();
             }
 
             void initBoard()
@@ -191,6 +253,9 @@ namespace ConnectFourAM
 
             void undoMove()
             {
+                var sw = new Stopwatch();
+                sw.Start();
+
                 GameData.undoneMoves.Push(GameData.allMoves.Peek());
                 Move lastmove = GameData.allMoves.Pop();
                 board[lastmove.yPosition, lastmove.xPosition] = 0;
@@ -199,11 +264,16 @@ namespace ConnectFourAM
                 Move lastmove2 = GameData.allMoves.Pop();
                 board[lastmove2.yPosition, lastmove2.xPosition] = 0;
 
+                GameTimeComplexity.UndoMoveTimeAvg.Add(sw.ElapsedMilliseconds);
+
                 updateBoard(GameData.allMoves);
             }
 
             void redoMove()
             {
+                var sw = new Stopwatch();
+                sw.Start();
+
                 Move move = GameData.undoneMoves.Pop();
                 board[move.yPosition, move.xPosition] = 1;
                 GameData.allMoves.Push(move);
@@ -212,7 +282,10 @@ namespace ConnectFourAM
                 board[move2.yPosition, move2.xPosition] = 1;
                 GameData.allMoves.Push(move2);
 
+                GameTimeComplexity.RedoMoveTimeAvg.Add(sw.ElapsedMilliseconds);
+
                 updateBoard(GameData.allMoves);
+
             }
 
             void makeMove(Player player)
@@ -253,7 +326,8 @@ namespace ConnectFourAM
 
             void updateBoard(Stack<Move> allMovesStack)
             {
-
+                var sw = new Stopwatch();
+                sw.Start();
 
                 for (int y = 5; y >= 0; y--)
                 {
@@ -287,8 +361,9 @@ namespace ConnectFourAM
                 }
                 Console.WriteLine("  --------------------------------");
                 Console.WriteLine("  1    2    3    4    5    6    7");
+                Console.WriteLine("\n");
 
-
+                GameTimeComplexity.UpdateDisplayTimesAvg.Add(sw.ElapsedMilliseconds);
             }
 
 
@@ -309,10 +384,6 @@ namespace ConnectFourAM
                     updateBoard(newStack);
                     System.Threading.Thread.Sleep(200);
                 }
-
-
-
-
             }
 
 
@@ -340,6 +411,9 @@ namespace ConnectFourAM
 
             void checkWin()
             {
+                var sw = new Stopwatch();
+                sw.Start();
+                
                 bool one = false,
                     two = false,
                     three = false,
@@ -349,8 +423,7 @@ namespace ConnectFourAM
                 {
                     for (var x = 0; x < boardWidth; x++)
                     {
-
-                        //Horizontal Check
+                        //Horizontal Check (--)
                         if (x + 3 < boardWidth && board[y, x + 1] == 1 && board[y, x + 2] == 1 && board[y, x + 3] == 1)
                         {
                             foreach (Move move in GameData.allMoves)
@@ -376,7 +449,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-
+                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                         Win(p1);
                                         return;
                                     }
@@ -386,7 +459,6 @@ namespace ConnectFourAM
                             two = false;
                             three = false;
                             four = false;
-
                             foreach (Move move in GameData.allMoves)
                             {
                                 if (move.player.id == 2)
@@ -410,6 +482,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
+                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                         Win(p2);
                                         return;
                                     }
@@ -421,7 +494,7 @@ namespace ConnectFourAM
                             four = false;
                         }
 
-                        //Vertical Check
+                        //Vertical Check (|)
                         if (y + 3 < boardHeight && board[y + 1, x] == 1 && board[y + 2, x] == 1 && board[y + 3, x] == 1)
                         {
                             foreach (Move move in GameData.allMoves)
@@ -447,6 +520,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
+                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                         Win(p1);
                                         return;
                                     }
@@ -479,6 +553,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
+                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                         Win(p2);
                                         return;
                                     }
@@ -488,11 +563,10 @@ namespace ConnectFourAM
                             two = false;
                             three = false;
                             four = false;
-
                         }
 
 
-                        //Diagonal up Check
+                        //Diagonal up Check (/)
                         if (y + 3 < boardHeight)
                         {
                             if (x + 3 < boardWidth && board[y + 1, x + 1] == 1 && board[y + 2, x + 2] == 1 && board[y + 3, x + 3] == 1)
@@ -520,6 +594,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
+                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                             Win(p1);
                                             return;
                                         }
@@ -529,7 +604,6 @@ namespace ConnectFourAM
                                 two = false;
                                 three = false;
                                 four = false;
-
                                 foreach (Move move in GameData.allMoves)
                                 {
                                     if (move.player.id == 2)
@@ -553,6 +627,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
+                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                             Win(p2);
                                             return;
                                         }
@@ -562,12 +637,10 @@ namespace ConnectFourAM
                                 two = false;
                                 three = false;
                                 four = false;
-
-
                             }
                         }
 
-                        //Diagonal down Check
+                        //Diagonal down Check (\)
                         if (y - 3 >= 0)
                         {
                             if (x + 3 < boardWidth && board[y - 1, x + 1] == 1 && board[y - 2, x + 2] == 1 && board[y - 3, x + 3] == 1)
@@ -595,6 +668,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
+                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                             Win(p1);
                                             return;
                                         }
@@ -604,7 +678,6 @@ namespace ConnectFourAM
                                 two = false;
                                 three = false;
                                 four = false;
-
                                 foreach (Move move in GameData.allMoves)
                                 {
                                     if (move.player.id == 2)
@@ -628,6 +701,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
+                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
                                             Win(p2);
                                             return;
                                         }
@@ -641,6 +715,10 @@ namespace ConnectFourAM
                         }
                     }
                 }
+                sw.Stop();
+                GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                Console.WriteLine("check win time = " + sw.ElapsedMilliseconds);
+                return;
             }
         }
     }
