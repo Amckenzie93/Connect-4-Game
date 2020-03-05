@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ConnectFourAM
@@ -43,15 +44,19 @@ namespace ConnectFourAM
 
             Console.WriteLine("Welcome to Connect 4 \n");
             Console.WriteLine("\n");
+
+            displayBoard();
+            Console.WriteLine("\n");
+
             Player p1 = new Player();
             p1.id = 1;
-            Console.WriteLine("Player 1 Please enter your player name");
+            Console.WriteLine("Player 1 Please enter your name");
             p1.name = Console.ReadLine();
 
             Player p2 = new Player();
             p2.id = 2;
 
-
+            
             menu();
 
 
@@ -62,10 +67,10 @@ namespace ConnectFourAM
             {
                 do
                 {
-                    Console.WriteLine("To make a move enter:          1");
-                    Console.WriteLine("To undo the last move enter:   2");
-                    Console.WriteLine("To redo the last move enter:   3");
                     Console.WriteLine("\n");
+                    Console.WriteLine("1:     To make a move enter");
+                    Console.WriteLine("2:     To undo the last move enter");
+                    Console.WriteLine("3:     To redo the last move enter");
                     gameChoice = int.Parse(Console.ReadLine());
                     if (gameChoice == 1)
                     {
@@ -86,14 +91,14 @@ namespace ConnectFourAM
             void menu()
             {
                 Console.WriteLine("\n");
-                Console.WriteLine("Do you want to play against another human?:       1");
-                Console.WriteLine("OR");
-                Console.WriteLine("Do you want to play against a computer?:          2");
+                Console.WriteLine("1:    Do you want to play against a human?");
+                Console.WriteLine("      OR");
+                Console.WriteLine("2:    Do you want to play against a computer?");
 
                 if (GameData.AllGames.Count > 0)
                 {
-                    Console.WriteLine("OR");
-                    Console.WriteLine("Do you want to Re-watch a previous game?:     3");
+                    Console.WriteLine("      OR");
+                    Console.WriteLine("3:    Do you want to Re-watch a previous game?");
                 }
                 Console.WriteLine("\n");
                 playerChoice = int.Parse(Console.ReadLine());
@@ -101,7 +106,7 @@ namespace ConnectFourAM
                 {
                     gameOver = false;
                     initBoard();
-                    Console.WriteLine("Player 2 Please enter your player name");
+                    Console.WriteLine("Player 2 Please enter your name");
                     p2.name = Console.ReadLine();
                     gameOptions();
                 }
@@ -119,7 +124,7 @@ namespace ConnectFourAM
                     for (var i = 0; i < GameData.AllGames.Count(); i++)
                     {
 
-                        Console.WriteLine("Game: " + (i + 1));
+                        Console.WriteLine((i + 1) + ":    Game " + (i + 1));
                     }
 
                     int gameNumber = int.Parse(Console.ReadLine()) - 1;
@@ -165,11 +170,11 @@ namespace ConnectFourAM
                 string message;
                 if (player == p1)
                 {
-                    message = string.Format("player " + player.name + " has won the game").Pastel("#a4f542");
+                    message = string.Format(player.name + " has won the game").Pastel("#a4f542");
                 }
                 else
                 {
-                    message = string.Format("player " + player.name + " has won the game").Pastel("#ff0000");
+                    message = string.Format(player.name + " has won the game").Pastel("#ff0000");
                 }
 
                 Console.WriteLine(message);
@@ -222,9 +227,11 @@ namespace ConnectFourAM
                 }
                 else
                 {
+                    Console.WriteLine("\n");
                     Console.WriteLine("Player " + player.id + "'s move");
                     Console.WriteLine("Please enter the column of your move as a whole number(1 - 7)");
                     thisMove.xPosition = int.Parse(Console.ReadLine()) - 1;
+                    Console.WriteLine("\n");
                 }
 
                 for (int y = 0; y < boardHeight; y++)
@@ -243,8 +250,11 @@ namespace ConnectFourAM
                 checkWin();
             }
 
+
             void updateBoard(Stack<Move> allMovesStack)
             {
+
+
                 for (int y = 5; y >= 0; y--)
                 {
                     for (int x = 0; x < boardWidth; x++)
@@ -277,6 +287,8 @@ namespace ConnectFourAM
                 }
                 Console.WriteLine("  --------------------------------");
                 Console.WriteLine("  1    2    3    4    5    6    7");
+
+
             }
 
 
