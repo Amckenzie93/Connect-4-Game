@@ -28,172 +28,37 @@ namespace ConnectFourAM
         public Stack<Move> undoneMoves = new Stack<Move>();
     }
 
-
     class GameMetrics
     {
         public List<long> UpdateDisplayTimesAvg = new List<long>();
         public List<long> UndoMoveTimeAvg = new List<long>();
         public List<long> RedoMoveTimeAvg = new List<long>();
         public List<long> CheckWinTimeAvg = new List<long>();
+        public List<long> MakeMoveAvg = new List<long>();
     }
-
 
     class ConnectFour
     {
         static void Main(string[] args)
         {
             GameData GameData = new GameData();
-            GameMetrics GameTimeComplexity = new GameMetrics();
+            GameMetrics gameMetrics = new GameMetrics();
             int boardHeight = 6;
             int boardWidth = 7;
-            int[,] board = new int[boardHeight, boardWidth];
-            bool gameOver = false;
             int gameChoice;
             int playerChoice;
-
+            int[,] board = new int[boardHeight, boardWidth];
+            bool gameOver = false;
 
             Console.WriteLine("Welcome to Connect 4 \n");
-            Console.WriteLine("\n");
-
-            displayBoard();
-            Console.WriteLine("\n");
-
             Player p1 = new Player();
             p1.id = 1;
             Console.WriteLine("Player 1 Please enter your name");
             p1.name = Console.ReadLine();
-
             Player p2 = new Player();
             p2.id = 2;
-
             menu();
             Console.ReadLine();
-
-            void gameOptions()
-            {
-                do
-                {
-                    Console.WriteLine("\n");
-                    Console.WriteLine("1:     To make a move enter");
-                    Console.WriteLine("2:     To undo the last move enter");
-                    Console.WriteLine("3:     To redo the last move enter");
-                    gameChoice = int.Parse(Console.ReadLine());
-                    if (gameChoice == 1)
-                    {
-                        makeMove(p1);
-                        makeMove(p2);
-                    }
-                    else if (gameChoice == 2)
-                    {
-                        undoMove();
-                    }
-                    else if (gameChoice == 3)
-                    {
-                        redoMove();
-                    }
-                } while (gameOver == false);
-            }
-
-            void menu()
-            {
-                Console.WriteLine("\n");
-                Console.WriteLine("1:    Do you want to play against a human?");
-                Console.WriteLine("      OR");
-                Console.WriteLine("2:    Do you want to play against a computer?");
-
-                if (GameData.AllGames.Count > 0)
-                {
-                    Console.WriteLine("      OR");
-                    Console.WriteLine("3:    Do you want to Re-watch a previous game?");
-                    Console.WriteLine("      OR");
-                    Console.WriteLine("4:    View game time complexity averages per function?");
-                }
-                Console.WriteLine("\n");
-                playerChoice = int.Parse(Console.ReadLine());
-                if (playerChoice == 1)
-                {
-                    gameOver = false;
-                    initBoard();
-                    Console.WriteLine("Player 2 Please enter your name");
-                    p2.name = Console.ReadLine();
-                    gameOptions();
-                }
-                else if (playerChoice == 2)
-                {
-                    gameOver = false;
-                    initBoard();
-                    p2.name = "HAL 9000";
-                    gameOptions();
-                }
-                else if (playerChoice == 3)
-                {
-                    Console.WriteLine("Please pick the game you wish to replay from the list below:");
-
-                    for (var i = 0; i < GameData.AllGames.Count(); i++)
-                    {
-
-                        Console.WriteLine((i + 1) + ":    Game " + (i + 1));
-                    }
-
-                    int gameNumber = int.Parse(Console.ReadLine()) - 1;
-                    initBoard();
-                    reWatch(gameNumber);
-                }
-                else if(playerChoice == 4)
-                {
-                    displayGameTime();
-                }
-            }
-
-            void displayGameTime()
-            {
-                long UpdateDisplayAvg = 0;
-                long UndoMoveAvg = 0;
-                long RedoMoveAvg = 0;
-                long CheckWinAvg = 0;
-
-
-
-                foreach (var item in GameTimeComplexity.UpdateDisplayTimesAvg)
-                {
-                    UpdateDisplayAvg += item;
-                }
-                foreach (var item in GameTimeComplexity.UndoMoveTimeAvg)
-                {
-                    UndoMoveAvg += item;
-                }
-                foreach (var item in GameTimeComplexity.RedoMoveTimeAvg)
-                {
-                    RedoMoveAvg += item;
-                }
-                foreach (var item in GameTimeComplexity.CheckWinTimeAvg)
-                {
-                    CheckWinAvg += item;
-                }
-
-                Console.WriteLine("Average time taken to update and display the game board in CMD window with new player moves:");
-                Console.WriteLine(UpdateDisplayAvg / GameTimeComplexity.UpdateDisplayTimesAvg.Count() + " miliseconds average.");
-                Console.WriteLine("\n");
-
-                if (GameTimeComplexity.UndoMoveTimeAvg.Count() > 0)
-                {
-                    Console.WriteLine("Average time taken to undo a pair of moves in the game:");
-                    Console.WriteLine(UndoMoveAvg / GameTimeComplexity.UndoMoveTimeAvg.Count() + " miliseconds average.");
-                    Console.WriteLine("\n");
-                }
-                if (GameTimeComplexity.RedoMoveTimeAvg.Count() > 0)
-                {
-                    Console.WriteLine("Average time taken to redo a pair of moves in the game:");
-                    Console.WriteLine(RedoMoveAvg / GameTimeComplexity.RedoMoveTimeAvg.Count() + " miliseconds average.");
-                    Console.WriteLine("\n");
-                }
-
-                Console.WriteLine("Average time taken to check for win conditions in the game:");
-                Console.WriteLine(CheckWinAvg / GameTimeComplexity.CheckWinTimeAvg.Count() + " miliseconds average.");
-                Console.WriteLine("\n");
-
-                menu();
-            }
 
             void initBoard()
             {
@@ -204,6 +69,19 @@ namespace ConnectFourAM
                         board[y, x] = 0;
                     }
                 }
+
+                Console.WriteLine("\n");
+
+                for (int y = 0; y < boardHeight; y++)
+                {
+                    for (int x = 0; x < boardWidth; x++)
+                    {
+                        Console.Write(string.Format("  {0}  ", board[y, x]));
+                    }
+                    Console.Write(Environment.NewLine);
+                }
+                Console.WriteLine("  --------------------------------");
+                Console.WriteLine("  1    2    3    4    5    6    7");
             }
 
 
@@ -227,45 +105,25 @@ namespace ConnectFourAM
                 menu();
             }
 
-            void Win(Player player)
-            {
-                string message;
-                if (player == p1)
-                {
-                    message = string.Format(player.name + " has won the game").Pastel("#a4f542");
-                }
-                else
-                {
-                    message = string.Format(player.name + " has won the game").Pastel("#ff0000");
-                }
-
-                Console.WriteLine(message);
-
-                Queue<Move> clonedStack = new Queue<Move>();
-                clonedStack = new Queue<Move>(GameData.allMoves);
-                GameData.AllGames.Add(clonedStack);
-                GameData.allMoves.Clear();
-                GameData.undoneMoves.Clear();
-                gameChoice = 0;
-                playerChoice = 0;
-                menu();
-            }
-
             void undoMove()
             {
                 var sw = new Stopwatch();
                 sw.Start();
+                if (GameData.allMoves.Count() >= 1)
+                {
+                    GameData.undoneMoves.Push(GameData.allMoves.Pop());
+                    Move lastmove = GameData.undoneMoves.Peek();
+                    board[lastmove.yPosition, lastmove.xPosition] = 0;
 
-                GameData.undoneMoves.Push(GameData.allMoves.Peek());
-                Move lastmove = GameData.allMoves.Pop();
-                board[lastmove.yPosition, lastmove.xPosition] = 0;
-
-                GameData.undoneMoves.Push(GameData.allMoves.Peek());
-                Move lastmove2 = GameData.allMoves.Pop();
-                board[lastmove2.yPosition, lastmove2.xPosition] = 0;
-
-                GameTimeComplexity.UndoMoveTimeAvg.Add(sw.ElapsedMilliseconds);
-
+                    GameData.undoneMoves.Push(GameData.allMoves.Peek());
+                    Move lastmove2 = GameData.allMoves.Pop();
+                    board[lastmove2.yPosition, lastmove2.xPosition] = 0;
+                }
+                else {
+                    Console.WriteLine(string.Format("No more moves to undo.").Pastel("#ff0000"));
+                }
+                sw.Stop();
+                gameMetrics.UndoMoveTimeAvg.Add(sw.ElapsedTicks);
                 updateBoard(GameData.allMoves);
             }
 
@@ -273,23 +131,30 @@ namespace ConnectFourAM
             {
                 var sw = new Stopwatch();
                 sw.Start();
+                if (GameData.undoneMoves.Count() >= 1)
+                {
+                    Move move = GameData.undoneMoves.Pop();
+                    board[move.yPosition, move.xPosition] = 1;
+                    GameData.allMoves.Push(move);
 
-                Move move = GameData.undoneMoves.Pop();
-                board[move.yPosition, move.xPosition] = 1;
-                GameData.allMoves.Push(move);
-
-                Move move2 = GameData.undoneMoves.Pop();
-                board[move2.yPosition, move2.xPosition] = 1;
-                GameData.allMoves.Push(move2);
-
-                GameTimeComplexity.RedoMoveTimeAvg.Add(sw.ElapsedMilliseconds);
-
+                    Move move2 = GameData.undoneMoves.Pop();
+                    board[move2.yPosition, move2.xPosition] = 1;
+                    GameData.allMoves.Push(move2);
+                }
+                else
+                {
+                    Console.WriteLine(string.Format("No more moves to redo.").Pastel("#ff0000"));
+                }
+                sw.Stop();
+                gameMetrics.RedoMoveTimeAvg.Add(sw.ElapsedTicks);
                 updateBoard(GameData.allMoves);
-
             }
 
             void makeMove(Player player)
             {
+                var sw = new Stopwatch();
+                sw.Start();
+
                 Move thisMove = new Move();
                 thisMove.player = player;
                 if (player.name == "HAL 9000")
@@ -303,8 +168,23 @@ namespace ConnectFourAM
                     Console.WriteLine("\n");
                     Console.WriteLine("Player " + player.id + "'s move");
                     Console.WriteLine("Please enter the column of your move as a whole number(1 - 7)");
-                    thisMove.xPosition = int.Parse(Console.ReadLine()) - 1;
                     Console.WriteLine("\n");
+
+                    var x = Console.ReadLine();
+                    bool success = false;
+                    do {
+                        success = int.TryParse(x, out int result);
+                        if (success && result >= 0 && result <= 7)
+                        {
+                            thisMove.xPosition = result - 1;
+                            success = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("please enter a valid move between 1 and 7");
+                            x = Console.ReadLine();
+                        }
+                    } while(success == false);
                 }
 
                 for (int y = 0; y < boardHeight; y++)
@@ -316,11 +196,12 @@ namespace ConnectFourAM
                         break;
                     }
                 }
-
                 thisMove.player = player;
-                GameData.allMoves.Push(thisMove);
-                updateBoard(GameData.allMoves);
-                checkWin();
+                    GameData.allMoves.Push(thisMove);
+                    sw.Stop();
+                    gameMetrics.MakeMoveAvg.Add(sw.ElapsedTicks);
+                    updateBoard(GameData.allMoves);
+                    checkWin();
             }
 
 
@@ -328,7 +209,6 @@ namespace ConnectFourAM
             {
                 var sw = new Stopwatch();
                 sw.Start();
-
                 for (int y = 5; y >= 0; y--)
                 {
                     for (int x = 0; x < boardWidth; x++)
@@ -362,8 +242,8 @@ namespace ConnectFourAM
                 Console.WriteLine("  --------------------------------");
                 Console.WriteLine("  1    2    3    4    5    6    7");
                 Console.WriteLine("\n");
-
-                GameTimeComplexity.UpdateDisplayTimesAvg.Add(sw.ElapsedMilliseconds);
+                gameMetrics.UpdateDisplayTimesAvg.Add(sw.ElapsedMilliseconds);
+                sw.Stop();
             }
 
 
@@ -377,6 +257,8 @@ namespace ConnectFourAM
                     }
                 }
                 Stack<Move> newStack = new Stack<Move>();
+
+                //the queue must be reversed in order to update the game data for use in methods to display a previous game recording.
                 foreach (var item in allMovesQueue.Reverse())
                 {
                     newStack.Push(item);
@@ -386,34 +268,129 @@ namespace ConnectFourAM
                 }
             }
 
-
-
-            void displayBoard()
+            void Win(Player player)
             {
-                int rowLength = board.GetLength(0);
-                int colLength = board.GetLength(1);
-
-                for (int y = 0; y < rowLength; y++)
+                if (player == p1)
                 {
-                    for (int x = 0; x < colLength; x++)
-                    {
-                        Console.Write(string.Format("  {0}  ", board[y, x]));
-                    }
-                    Console.Write(Environment.NewLine);
+                    Console.WriteLine(string.Format(player.name + " has won the game").Pastel("#a4f542"));
                 }
-                Console.WriteLine("  --------------------------------");
-                Console.WriteLine("  1    2    3    4    5    6    7");
+                else
+                {
+                    Console.WriteLine(string.Format(player.name + " has won the game").Pastel("#ff0000"));
+                }
+                Queue<Move> clonedStack = new Queue<Move>();
+                clonedStack = new Queue<Move>(GameData.allMoves);
+                GameData.AllGames.Add(clonedStack);
+                GameData.allMoves.Clear();
+                GameData.undoneMoves.Clear();
+                gameChoice = 0;
+                playerChoice = 0;
+                menu();
             }
 
+            void gameOptions()
+            {
+                do
+                {
+                    Console.WriteLine("\n");
+                    Console.WriteLine("1:     To make a move enter");
+                    Console.WriteLine("2:     To undo the last move enter");
+                    Console.WriteLine("3:     To redo the last move enter");
+                    Console.WriteLine("\n");
 
+                    var x = Console.ReadLine();
+                    bool success = int.TryParse(x, out int result);
+                    if (success)
+                    {
+                        gameChoice = result;
+                    }
+                    else
+                    {
+                        Console.WriteLine("please enter a valid number");
+                        gameOptions();
+                    }
 
+                    if (gameChoice == 1)
+                    {
+                        makeMove(p1);
+                        makeMove(p2);
+                    }
+                    else if (gameChoice == 2)
+                    {
+                        undoMove();
+                    }
+                    else if (gameChoice == 3)
+                    {
+                        redoMove();
+                    }
+                } while (gameOver == false);
+            }
 
+            void menu()
+            {
+                Console.WriteLine("\n");
+                Console.WriteLine("1:    Do you want to play against a human?");
+                Console.WriteLine("2:    Do you want to play against a computer?");
+
+                if (GameData.AllGames.Count > 0)
+                {
+                    Console.WriteLine("3:    Do you want to Re-watch a previous game?");
+                    Console.WriteLine("4:    View game time complexity averages per function?");
+                }
+                Console.WriteLine("\n");
+
+                var x = Console.ReadLine();
+                bool success = int.TryParse(x, out int result);
+                if (success && result >= 1 && result <= 4)
+                {
+                    playerChoice = result;
+                }
+                else
+                {
+                    Console.WriteLine("please enter a valid number");
+                    menu();
+                }
+
+                if (playerChoice == 1)
+                {
+                    gameOver = false;
+                    Console.WriteLine("Player 2 Please enter your name");
+                    p2.name = Console.ReadLine();
+                    initBoard();
+                    gameOptions();
+                }
+                else if (playerChoice == 2)
+                {
+                    gameOver = false;
+                    p2.name = "HAL 9000";
+                    initBoard();
+                    gameOptions();
+                }
+                else if (playerChoice == 3)
+                {
+                    Console.WriteLine("Please pick the game you wish to replay from the list below:");
+                    for (var i = 0; i < GameData.AllGames.Count(); i++)
+                    {
+                        Console.WriteLine((i + 1) + ":    Game " + (i + 1));
+                    }
+                    int gameNumber = int.Parse(Console.ReadLine()) - 1;
+                    initBoard();
+                    reWatch(gameNumber);
+                }
+                else if (playerChoice == 4)
+                {
+                    displayGameTime();
+                }
+                else
+                {
+                    menu();
+                }
+            }
 
             void checkWin()
             {
                 var sw = new Stopwatch();
                 sw.Start();
-                
                 bool one = false,
                     two = false,
                     three = false,
@@ -449,7 +426,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                        gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                         Win(p1);
                                         return;
                                     }
@@ -482,7 +459,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                        gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                         Win(p2);
                                         return;
                                     }
@@ -520,7 +497,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                        gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                         Win(p1);
                                         return;
                                     }
@@ -553,7 +530,7 @@ namespace ConnectFourAM
 
                                     if (one && two && three && four)
                                     {
-                                        GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                        gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                         Win(p2);
                                         return;
                                     }
@@ -594,7 +571,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                            gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                             Win(p1);
                                             return;
                                         }
@@ -627,7 +604,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                            gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                             Win(p2);
                                             return;
                                         }
@@ -668,7 +645,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                            gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                             Win(p1);
                                             return;
                                         }
@@ -701,7 +678,7 @@ namespace ConnectFourAM
 
                                         if (one && two && three && four)
                                         {
-                                            GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
+                                            gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                                             Win(p2);
                                             return;
                                         }
@@ -716,12 +693,64 @@ namespace ConnectFourAM
                     }
                 }
                 sw.Stop();
-                GameTimeComplexity.CheckWinTimeAvg.Add(sw.ElapsedMilliseconds);
-                Console.WriteLine("check win time = " + sw.ElapsedMilliseconds);
+                gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                 return;
+            }
+
+            void displayGameTime()
+            {
+                long GameMoveAvg= 0;
+                long UpdateDisplayAvg = 0;
+                long UndoMoveAvg = 0;
+                long RedoMoveAvg = 0;
+                long CheckWinAvg = 0;
+
+
+                foreach (var item in gameMetrics.UpdateDisplayTimesAvg)
+                {
+                    GameMoveAvg += item;
+                }
+                foreach (var item in gameMetrics.UpdateDisplayTimesAvg)
+                {
+                    UpdateDisplayAvg += item;
+                }
+                foreach (var item in gameMetrics.UndoMoveTimeAvg)
+                {
+                    UndoMoveAvg += item;
+                }
+                foreach (var item in gameMetrics.RedoMoveTimeAvg)
+                {
+                    RedoMoveAvg += item;
+                }
+                foreach (var item in gameMetrics.CheckWinTimeAvg)
+                {
+                    CheckWinAvg += item;
+                }
+
+                Console.WriteLine("Average for players to make their move and update all stored data accordingly");
+                Console.WriteLine(string.Format(GameMoveAvg / gameMetrics.MakeMoveAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+                Console.WriteLine("\n");
+
+                Console.WriteLine("Average time taken to update and display the game board in CMD window with new player moves:");
+                Console.WriteLine(string.Format(UpdateDisplayAvg / gameMetrics.UpdateDisplayTimesAvg.Count() + " Milliseconds average.").Pastel("#a4f542"));
+                Console.WriteLine("\n");
+                if (gameMetrics.UndoMoveTimeAvg.Count() > 0)
+                {
+                    Console.WriteLine("Average time taken to undo a pair of moves in the game:");
+                    Console.WriteLine(string.Format(UndoMoveAvg / gameMetrics.UndoMoveTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+                    Console.WriteLine("\n");
+                }
+                if (gameMetrics.RedoMoveTimeAvg.Count() > 0)
+                {
+                    Console.WriteLine("Average time taken to redo a pair of moves in the game:");
+                    Console.WriteLine(string.Format(RedoMoveAvg / gameMetrics.RedoMoveTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+                    Console.WriteLine("\n");
+                }
+                Console.WriteLine("Average time taken to check for win conditions in the game:");
+                Console.WriteLine(string.Format(CheckWinAvg / gameMetrics.CheckWinTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+
+                menu();
             }
         }
     }
 }
-
-
