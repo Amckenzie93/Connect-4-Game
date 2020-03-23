@@ -8,12 +8,15 @@ using System.Linq;
 namespace ConnectFourAM
 {
 
+    //Player class to hold player name and player ID
     class Player
     {
         public string name;
         public int id;
     }
 
+
+    //Move class to hold a players moves in X and Y coordinates as well as what player made the move
     class Move
     {
         public int xPosition;
@@ -21,6 +24,7 @@ namespace ConnectFourAM
         public Player player;
     }
 
+    //GameData class to hold all moves, and undone moves from a given game in play.
     class GameData
     {
         public List<Queue<Move>> AllGames = new List<Queue<Move>>();
@@ -28,6 +32,7 @@ namespace ConnectFourAM
         public Stack<Move> undoneMoves = new Stack<Move>();
     }
 
+    //GameMetric class to hold all average run times of each function reocrded for analytics
     class GameMetrics
     {
         public List<long> UpdateDisplayTimesAvg = new List<long>();
@@ -60,6 +65,9 @@ namespace ConnectFourAM
             menu();
             Console.ReadLine();
 
+
+
+            // function to initiate the game board ensuring all x and y coordinates in the board array are set to zero, then prints the game board to the users screen.
             void initBoard()
             {
                 for (var y = 0; y < boardHeight; y++)
@@ -85,6 +93,7 @@ namespace ConnectFourAM
             }
 
 
+            // function to update the board x and y coordinates of each players move in the game the user has chosen to rewatch, before passing this data off to update the board visually for the player to watch.
             void reWatch(int game)
             {
                 foreach (Move move in GameData.AllGames[game])
@@ -105,6 +114,8 @@ namespace ConnectFourAM
                 menu();
             }
 
+
+            //function that undoes a set of moves in a current game. 
             void undoMove()
             {
                 var sw = new Stopwatch();
@@ -127,6 +138,8 @@ namespace ConnectFourAM
                 updateBoard(GameData.allMoves);
             }
 
+
+            //function to redo any undone moves in a current game.
             void redoMove()
             {
                 var sw = new Stopwatch();
@@ -150,6 +163,8 @@ namespace ConnectFourAM
                 updateBoard(GameData.allMoves);
             }
 
+
+            // function that allows the player to make a move in the game based on x and y coorindates, this also holds basic AI functionality for playing against a computer which randomly generates its next move.
             void makeMove(Player player)
             {
                 var sw = new Stopwatch();
@@ -205,6 +220,7 @@ namespace ConnectFourAM
             }
 
 
+            // function that is called elsewhere in the game, passing in all moves in said game, to update the command line display of the game as its played.
             void updateBoard(Stack<Move> allMovesStack)
             {
                 var sw = new Stopwatch();
@@ -247,6 +263,7 @@ namespace ConnectFourAM
             }
 
 
+            //function that displays visually in the command line each move made in a rewatched game with a pause of 200 miliseconds 
             void RewatchBoard(Queue<Move> allMovesQueue)
             {
                 for (int y = 0; y < boardHeight; y++)
@@ -268,6 +285,8 @@ namespace ConnectFourAM
                 }
             }
 
+
+            // function to highlight which player won the game and reset all settings of the game ready for the next option the user picks (play again, rewatch, analytics etc)
             void Win(Player player)
             {
                 if (player == p1)
@@ -288,6 +307,8 @@ namespace ConnectFourAM
                 menu();
             }
 
+
+            // function that displays and processes players options mid game.
             void gameOptions()
             {
                 do
@@ -326,6 +347,8 @@ namespace ConnectFourAM
                 } while (gameOver == false);
             }
 
+
+            // function that handles the main menu options and processes what the user chooses. 
             void menu()
             {
                 Console.WriteLine("\n");
@@ -387,6 +410,65 @@ namespace ConnectFourAM
                 }
             }
 
+
+            // function to display each recorded functions average runtime in the game for analytics and report purposes.
+            void displayGameTime()
+            {
+                long GameMoveAvg = 0;
+                long UpdateDisplayAvg = 0;
+                long UndoMoveAvg = 0;
+                long RedoMoveAvg = 0;
+                long CheckWinAvg = 0;
+
+
+                foreach (var item in gameMetrics.UpdateDisplayTimesAvg)
+                {
+                    GameMoveAvg += item;
+                }
+                foreach (var item in gameMetrics.UpdateDisplayTimesAvg)
+                {
+                    UpdateDisplayAvg += item;
+                }
+                foreach (var item in gameMetrics.UndoMoveTimeAvg)
+                {
+                    UndoMoveAvg += item;
+                }
+                foreach (var item in gameMetrics.RedoMoveTimeAvg)
+                {
+                    RedoMoveAvg += item;
+                }
+                foreach (var item in gameMetrics.CheckWinTimeAvg)
+                {
+                    CheckWinAvg += item;
+                }
+
+                Console.WriteLine("Average for players to make their move and update all stored data accordingly");
+                Console.WriteLine(string.Format(GameMoveAvg / gameMetrics.MakeMoveAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+                Console.WriteLine("\n");
+
+                Console.WriteLine("Average time taken to update and display the game board in CMD window with new player moves:");
+                Console.WriteLine(string.Format(UpdateDisplayAvg / gameMetrics.UpdateDisplayTimesAvg.Count() + " Milliseconds average.").Pastel("#a4f542"));
+                Console.WriteLine("\n");
+                if (gameMetrics.UndoMoveTimeAvg.Count() > 0)
+                {
+                    Console.WriteLine("Average time taken to undo a pair of moves in the game:");
+                    Console.WriteLine(string.Format(UndoMoveAvg / gameMetrics.UndoMoveTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+                    Console.WriteLine("\n");
+                }
+                if (gameMetrics.RedoMoveTimeAvg.Count() > 0)
+                {
+                    Console.WriteLine("Average time taken to redo a pair of moves in the game:");
+                    Console.WriteLine(string.Format(RedoMoveAvg / gameMetrics.RedoMoveTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+                    Console.WriteLine("\n");
+                }
+                Console.WriteLine("Average time taken to check for win conditions in the game:");
+                Console.WriteLine(string.Format(CheckWinAvg / gameMetrics.CheckWinTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
+
+                menu();
+            }
+
+
+            // function to check win condition in each direction, vertical, horizontal, diagonal left, diagonal right.
             void checkWin()
             {
                 var sw = new Stopwatch();
@@ -695,61 +777,6 @@ namespace ConnectFourAM
                 sw.Stop();
                 gameMetrics.CheckWinTimeAvg.Add(sw.ElapsedTicks);
                 return;
-            }
-
-            void displayGameTime()
-            {
-                long GameMoveAvg= 0;
-                long UpdateDisplayAvg = 0;
-                long UndoMoveAvg = 0;
-                long RedoMoveAvg = 0;
-                long CheckWinAvg = 0;
-
-
-                foreach (var item in gameMetrics.UpdateDisplayTimesAvg)
-                {
-                    GameMoveAvg += item;
-                }
-                foreach (var item in gameMetrics.UpdateDisplayTimesAvg)
-                {
-                    UpdateDisplayAvg += item;
-                }
-                foreach (var item in gameMetrics.UndoMoveTimeAvg)
-                {
-                    UndoMoveAvg += item;
-                }
-                foreach (var item in gameMetrics.RedoMoveTimeAvg)
-                {
-                    RedoMoveAvg += item;
-                }
-                foreach (var item in gameMetrics.CheckWinTimeAvg)
-                {
-                    CheckWinAvg += item;
-                }
-
-                Console.WriteLine("Average for players to make their move and update all stored data accordingly");
-                Console.WriteLine(string.Format(GameMoveAvg / gameMetrics.MakeMoveAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
-                Console.WriteLine("\n");
-
-                Console.WriteLine("Average time taken to update and display the game board in CMD window with new player moves:");
-                Console.WriteLine(string.Format(UpdateDisplayAvg / gameMetrics.UpdateDisplayTimesAvg.Count() + " Milliseconds average.").Pastel("#a4f542"));
-                Console.WriteLine("\n");
-                if (gameMetrics.UndoMoveTimeAvg.Count() > 0)
-                {
-                    Console.WriteLine("Average time taken to undo a pair of moves in the game:");
-                    Console.WriteLine(string.Format(UndoMoveAvg / gameMetrics.UndoMoveTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
-                    Console.WriteLine("\n");
-                }
-                if (gameMetrics.RedoMoveTimeAvg.Count() > 0)
-                {
-                    Console.WriteLine("Average time taken to redo a pair of moves in the game:");
-                    Console.WriteLine(string.Format(RedoMoveAvg / gameMetrics.RedoMoveTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
-                    Console.WriteLine("\n");
-                }
-                Console.WriteLine("Average time taken to check for win conditions in the game:");
-                Console.WriteLine(string.Format(CheckWinAvg / gameMetrics.CheckWinTimeAvg.Count() + " Nanoseconds average.").Pastel("#a4f542"));
-
-                menu();
             }
         }
     }
