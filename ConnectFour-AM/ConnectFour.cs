@@ -67,7 +67,7 @@ namespace ConnectFourAM
 
 
 
-            // function to initiate the game board ensuring all x and y coordinates in the board array are set to zero, then prints the game board to the users screen.
+            //Method to initiate the game board ensuring all x and y coordinates in the board array are set to zero, then prints the game board to the users screen.
             void initBoard()
             {
                 for (var y = 0; y < boardHeight; y++)
@@ -93,7 +93,7 @@ namespace ConnectFourAM
             }
 
 
-            // function to update the board x and y coordinates of each players move in the game the user has chosen to rewatch, before passing this data off to update the board visually for the player to watch.
+            //Method to update the board x and y coordinates of each players move in the game the user has chosen to rewatch, before passing this data off to update the board visually for the player to watch.
             void reWatch(int game)
             {
                 foreach (Move move in GameData.AllGames[game])
@@ -115,7 +115,7 @@ namespace ConnectFourAM
             }
 
 
-            //function that undoes a set of moves in a current game. 
+            //Method that undoes a set of moves in a current game. 
             void undoMove()
             {
                 var sw = new Stopwatch();
@@ -130,7 +130,8 @@ namespace ConnectFourAM
                     Move lastmove2 = GameData.allMoves.Pop();
                     board[lastmove2.yPosition, lastmove2.xPosition] = 0;
                 }
-                else {
+                else
+                {
                     Console.WriteLine(string.Format("No more moves to undo.").Pastel("#ff0000"));
                 }
                 sw.Stop();
@@ -139,7 +140,7 @@ namespace ConnectFourAM
             }
 
 
-            //function to redo any undone moves in a current game.
+            //Method to redo any undone moves in a current game.
             void redoMove()
             {
                 var sw = new Stopwatch();
@@ -164,7 +165,7 @@ namespace ConnectFourAM
             }
 
 
-            // function that allows the player to make a move in the game based on x and y coorindates, this also holds basic AI functionality for playing against a computer which randomly generates its next move.
+            //Method that allows the player to make a move in the game based on x and y coorindates, this also holds basic AI functionality for playing against a computer which randomly generates its next move.
             void makeMove(Player player)
             {
                 var sw = new Stopwatch();
@@ -187,7 +188,8 @@ namespace ConnectFourAM
 
                     var x = Console.ReadLine();
                     bool success = false;
-                    do {
+                    do
+                    {
                         success = int.TryParse(x, out int result);
                         if (success && result >= 0 && result <= 7)
                         {
@@ -199,7 +201,7 @@ namespace ConnectFourAM
                             Console.WriteLine("please enter a valid move between 1 and 7");
                             x = Console.ReadLine();
                         }
-                    } while(success == false);
+                    } while (success == false);
                 }
 
                 for (int y = 0; y < boardHeight; y++)
@@ -212,15 +214,19 @@ namespace ConnectFourAM
                     }
                 }
                 thisMove.player = player;
-                    GameData.allMoves.Push(thisMove);
-                    sw.Stop();
-                    gameMetrics.MakeMoveAvg.Add(sw.ElapsedTicks);
-                    updateBoard(GameData.allMoves);
+                GameData.allMoves.Push(thisMove);
+                sw.Stop();
+                gameMetrics.MakeMoveAvg.Add(sw.ElapsedTicks);
+                updateBoard(GameData.allMoves);
+                // if there have been more than 6 moves in the game (3 moves per player so far) only then start checking the win condition
+                if (GameData.allMoves.Count() > 6)
+                {
                     checkWin();
+                }
             }
 
 
-            // function that is called elsewhere in the game, passing in all moves in said game, to update the command line display of the game as its played.
+            //Method that is called elsewhere in the game, passing in all moves in said game, to update the command line display of the game as its played.
             void updateBoard(Stack<Move> allMovesStack)
             {
                 var sw = new Stopwatch();
@@ -263,7 +269,7 @@ namespace ConnectFourAM
             }
 
 
-            //function that displays visually in the command line each move made in a rewatched game with a pause of 200 miliseconds 
+            //Method that displays visually in the command line each move made in a rewatched game with a pause of 200 miliseconds 
             void RewatchBoard(Queue<Move> allMovesQueue)
             {
                 for (int y = 0; y < boardHeight; y++)
@@ -286,7 +292,7 @@ namespace ConnectFourAM
             }
 
 
-            // function to highlight which player won the game and reset all settings of the game ready for the next option the user picks (play again, rewatch, analytics etc)
+            //Method to highlight which player won the game and reset all settings of the game ready for the next option the user picks (play again, rewatch, analytics etc)
             void Win(Player player)
             {
                 if (player == p1)
@@ -308,7 +314,7 @@ namespace ConnectFourAM
             }
 
 
-            // function that displays and processes players options mid game.
+            //Method that displays and processes players options mid game.
             void gameOptions()
             {
                 do
@@ -348,7 +354,7 @@ namespace ConnectFourAM
             }
 
 
-            // function that handles the main menu options and processes what the user chooses. 
+            //Method that handles the main menu options and processes what the user chooses. 
             void menu()
             {
                 Console.WriteLine("\n");
@@ -411,7 +417,7 @@ namespace ConnectFourAM
             }
 
 
-            // function to display each recorded functions average runtime in the game for analytics and report purposes.
+            //Method to display each recorded functions average runtime in the game for analytics and report purposes.
             void displayGameTime()
             {
                 long GameMoveAvg = 0;
@@ -468,7 +474,7 @@ namespace ConnectFourAM
             }
 
 
-            // function to check win condition in each direction, vertical, horizontal, diagonal left, diagonal right.
+            //Method to check win condition in each direction, vertical, horizontal, diagonal left, diagonal right.
             void checkWin()
             {
                 var sw = new Stopwatch();
