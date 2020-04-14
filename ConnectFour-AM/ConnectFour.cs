@@ -185,13 +185,13 @@ namespace ConnectFourAM
                     Console.WriteLine("Player " + player.id + "'s move");
                     Console.WriteLine("Please enter the column of your move as a whole number(1 - 7)");
                     Console.WriteLine("\n");
-
-                    var x = Console.ReadLine();
+                    
                     bool success = false;
                     do
                     {
-                        success = int.TryParse(x, out int result);
-                        if (success && result >= 0 && result <= 7)
+                        var x = Console.ReadLine();
+                        int.TryParse(x, out int result);
+                        if (result > 0 && result <= 7)
                         {
                             thisMove.xPosition = result - 1;
                             success = true;
@@ -199,7 +199,6 @@ namespace ConnectFourAM
                         else
                         {
                             Console.WriteLine("please enter a valid move between 1 and 7");
-                            x = Console.ReadLine();
                         }
                     } while (success == false);
                 }
