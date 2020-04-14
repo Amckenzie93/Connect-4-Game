@@ -8,10 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\Debug\**" />
     <Compile Remove="bin\Release\Mac\**" />
     <Compile Remove="bin\Release\Windows\**" />
+    <EmbeddedResource Remove="bin\Debug\**" />
     <EmbeddedResource Remove="bin\Release\Mac\**" />
     <EmbeddedResource Remove="bin\Release\Windows\**" />
+    <None Remove="bin\Debug\**" />
     <None Remove="bin\Release\Mac\**" />
     <None Remove="bin\Release\Windows\**" />
   </ItemGroup>
@@ -24,9 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="bin\Debug\netcoreapp2.1\ConnectFour-AM.deps.json" />
-    <Content Include="bin\Debug\netcoreapp2.1\ConnectFour-AM.runtimeconfig.dev.json" />
-    <Content Include="bin\Debug\netcoreapp2.1\ConnectFour-AM.runtimeconfig.json" />
     <Content Include="bin\Release\netcoreapp2.1\ConnectFour-AM.deps.json" />
     <Content Include="bin\Release\netcoreapp2.1\ConnectFour-AM.runtimeconfig.dev.json" />
     <Content Include="bin\Release\netcoreapp2.1\ConnectFour-AM.runtimeconfig.json" />
@@ -41,8 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="bin\Debug\netcoreapp2.1\ConnectFour-AM.dll" />
-    <None Include="bin\Debug\netcoreapp2.1\ConnectFour-AM.pdb" />
     <None Include="bin\Release\netcoreapp2.1\ConnectFour-AM.dll" />
     <None Include="bin\Release\netcoreapp2.1\ConnectFour-AM.pdb" />
     <None Include="bin\Release\netcoreapp2.1\osx-x64\ConnectFour-AM" />
