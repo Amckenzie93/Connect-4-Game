@@ -8,60 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="bin\Debug\**" />
-    <Compile Remove="bin\Release\Mac\**" />
-    <Compile Remove="bin\Release\Windows\**" />
-    <EmbeddedResource Remove="bin\Debug\**" />
-    <EmbeddedResource Remove="bin\Release\Mac\**" />
-    <EmbeddedResource Remove="bin\Release\Windows\**" />
-    <None Remove="bin\Debug\**" />
-    <None Remove="bin\Release\Mac\**" />
-    <None Remove="bin\Release\Windows\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.AssemblyInfo.cs" />
-    <Compile Include="obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Include="obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Include="obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="bin\Release\netcoreapp2.1\ConnectFour-AM.deps.json" />
-    <Content Include="bin\Release\netcoreapp2.1\ConnectFour-AM.runtimeconfig.dev.json" />
-    <Content Include="bin\Release\netcoreapp2.1\ConnectFour-AM.runtimeconfig.json" />
-    <Content Include="bin\Release\netcoreapp2.1\osx-x64\ConnectFour-AM.deps.json" />
-    <Content Include="bin\Release\netcoreapp2.1\osx-x64\ConnectFour-AM.runtimeconfig.dev.json" />
-    <Content Include="bin\Release\netcoreapp2.1\osx-x64\ConnectFour-AM.runtimeconfig.json" />
-    <Content Include="bin\Release\netcoreapp2.1\win-x86\ConnectFour-AM.deps.json" />
-    <Content Include="bin\Release\netcoreapp2.1\win-x86\ConnectFour-AM.runtimeconfig.dev.json" />
-    <Content Include="bin\Release\netcoreapp2.1\win-x86\ConnectFour-AM.runtimeconfig.json" />
-    <Content Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.csproj.FileListAbsolute.txt" />
-    <Content Include="obj\project.assets.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="bin\Release\netcoreapp2.1\ConnectFour-AM.dll" />
-    <None Include="bin\Release\netcoreapp2.1\ConnectFour-AM.pdb" />
-    <None Include="bin\Release\netcoreapp2.1\osx-x64\ConnectFour-AM" />
-    <None Include="bin\Release\netcoreapp2.1\osx-x64\ConnectFour-AM.dll" />
-    <None Include="bin\Release\netcoreapp2.1\osx-x64\ConnectFour-AM.pdb" />
-    <None Include="bin\Release\netcoreapp2.1\osx-x64\libhostfxr.dylib" />
-    <None Include="bin\Release\netcoreapp2.1\osx-x64\libhostpolicy.dylib" />
-    <None Include="bin\Release\netcoreapp2.1\win-x86\ConnectFour-AM.dll" />
-    <None Include="bin\Release\netcoreapp2.1\win-x86\ConnectFour-AM.exe" />
-    <None Include="bin\Release\netcoreapp2.1\win-x86\ConnectFour-AM.pdb" />
-    <None Include="bin\Release\netcoreapp2.1\win-x86\hostfxr.dll" />
-    <None Include="bin\Release\netcoreapp2.1\win-x86\hostpolicy.dll" />
-    <None Include="obj\ConnectFour-AM.csproj.nuget.cache" />
-    <None Include="obj\ConnectFour-AM.csproj.nuget.g.props" />
-    <None Include="obj\ConnectFour-AM.csproj.nuget.g.targets" />
-    <None Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.AssemblyInfoInputs.cache" />
-    <None Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.assets.cache" />
-    <None Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.csproj.CoreCompileInputs.cache" />
-    <None Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.csprojAssemblyReference.cache" />
-    <None Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.dll" />
-    <None Include="obj\Debug\netcoreapp2.1\ConnectFour-AM.pdb" />
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
   </ItemGroup>
 
   <ItemGroup>
